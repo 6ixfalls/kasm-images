@@ -32,11 +32,13 @@ RUN bash $INST_SCRIPTS/wine/install_wine.sh  && rm -rf $INST_SCRIPTS/wine/
 
 ### Install Grapejuice
 RUN <<-EOF
-  sudo dpkg --add-architecture i386
-  curl https://gitlab.com/brinkervii/grapejuice/-/raw/master/ci_scripts/signing_keys/public_key.gpg | sudo tee /usr/share/keyrings/grapejuice-archive-keyring.gpg
-  sudo tee /etc/apt/sources.list.d/grapejuice.list <<< 'deb [signed-by=/usr/share/keyrings/grapejuice-archive-keyring.gpg] https://brinkervii.gitlab.io/grapejuice/repositories/debian/ universal main'
-  sudo apt update && sudo apt upgrade -y
-  sudo apt install -y grapejuice
+  dpkg --add-architecture i386
+  (
+    curl -s https://gitlab.com/brinkervii/grapejuice/-/raw/master/ci_scripts/signing_keys/public_key.gpg | tee /usr/share/keyrings/grapejuice-archive-keyring.gpg >/dev/null
+    echo 'deb [signed-by=/usr/share/keyrings/grapejuice-archive-keyring.gpg] https://brinkervii.gitlab.io/grapejuice/repositories/debian/ universal main' | tee /etc/apt/sources.list.d/grapejuice.list >/dev/null
+  )
+  apt update && sudo apt upgrade -y
+  apt install -y grapejuice
 EOF
 
 #ADD ./src/common/scripts $STARTUPDIR
